@@ -20,6 +20,6 @@ export const ITEM_STATUS_LABELS = {
 
 export const RENTAL_STATUS_LABELS = {
   [RENTAL_STATUS.Active]: "租赁中",
-  [RENTAL_STATUS.ReturnRequested]: "待确认归还",
+  [RENTAL_STATUS.ReturnRequested]: "已申请归还",
   [RENTAL_STATUS.Completed]: "已完成"
 };

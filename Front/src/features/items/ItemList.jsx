@@ -1,9 +1,9 @@
 import EmptyState from "../../components/EmptyState.jsx";
 import ItemCard from "./ItemCard.jsx";
 
-export default function ItemList({ items, emptyTitle, ...cardProps }) {
+export default function ItemList({ items, emptyTitle, emptyDescription = "链上暂时没有符合条件的数据", ...cardProps }) {
   if (!items.length) {
-    return <EmptyState title={emptyTitle} description="链上暂时没有符合条件的数据" />;
+    return <EmptyState title={emptyTitle} description={emptyDescription} />;
   }
 
   return (

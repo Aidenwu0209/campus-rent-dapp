@@ -8,6 +8,7 @@ export function getItemPermission(item, account) {
     isOwner,
     canRent: Boolean(account) && !isOwner && item.status === ITEM_STATUS.Available,
     canUnlist: Boolean(account) && isOwner && item.status === ITEM_STATUS.Available,
+    canRelist: Boolean(account) && isOwner && item.status === ITEM_STATUS.Unlisted,
     canConfirmReturn: Boolean(account) && isOwner && item.status === ITEM_STATUS.ReturnRequested
   };
 }

@@ -7,6 +7,11 @@ const ERROR_MESSAGES = [
   ["Item is not available", "物品当前不可租赁"],
   ["Item owner cannot rent own item", "发布者不能租赁自己的物品"],
   ["insufficient funds", "钱包余额不足"],
+  ["Already rented", "该物品已经被租赁，请刷新后查看最新状态"],
+  ["Invalid rental days", "租赁天数不符合物品允许范围"],
+  ["No active rental", "当前物品没有可处理的租赁记录"],
+  ["missing revert data", "合约拒绝了本次操作，请检查账户权限、物品状态或支付金额"],
+  ["call exception", "合约调用失败，请确认网络、合约地址和链上状态"],
   ["network changed", "钱包网络已切换，请刷新数据后重试"],
   ["could not coalesce error", "合约校验未通过，请检查状态、权限或支付金额"]
 ];

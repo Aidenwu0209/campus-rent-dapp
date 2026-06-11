@@ -4,5 +4,5 @@ export default function StatusBadge({ type = "item", status }) {
   const labels = type === "rental" ? RENTAL_STATUS_LABELS : ITEM_STATUS_LABELS;
   const label = labels[Number(status)] ?? "未知状态";
 
-  return <span className={`status-badge status-${Number(status)}`}>{label}</span>;
+  return <span className={`status-badge ${type}-status status-${Number(status)}`}>{label}</span>;
 }

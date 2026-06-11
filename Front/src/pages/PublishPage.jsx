@@ -13,7 +13,7 @@ export default function PublishPage({ account, writeContract, data, refreshWalle
       return;
     }
 
-    await runTransaction(
+    return runTransaction(
       {
         pending: "发布交易确认中，请在 MetaMask 中确认",
         success: "物品发布成功，首页和我的发布已刷新"
@@ -31,13 +31,14 @@ export default function PublishPage({ account, writeContract, data, refreshWalle
   }
 
   return (
-    <div className="page-stack narrow">
-      <div className="section-heading">
+    <div className="page-stack">
+      <section className="page-hero-card compact">
         <div>
+          <span className="eyebrow">发布物品</span>
           <h2>发布物品</h2>
-          <p>金额输入使用 ETH，提交前自动转换为 wei，最终规则由合约校验。</p>
+          <p>填写物品信息、日租金、押金和最大租赁天数，提交后写入智能合约。</p>
         </div>
-      </div>
+      </section>
       <ErrorMessage message={data.error} />
       <TxStatus state={txState} />
       <PublishItemForm

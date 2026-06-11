@@ -28,6 +28,7 @@ export function useTxState() {
         error: "",
         txHash: tx.hash
       });
+      return true;
     } catch (error) {
       setTxState({
         loading: false,
@@ -35,6 +36,7 @@ export function useTxState() {
         error: toUserError(error),
         txHash: ""
       });
+      return false;
     }
   };
 

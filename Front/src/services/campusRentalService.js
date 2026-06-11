@@ -111,6 +111,10 @@ export async function createItem(contract, form) {
 
 export async function rentItem(contract, item, rentDays) {
   const normalizedDays = Number(rentDays);
+  if (!Number.isInteger(normalizedDays) || normalizedDays <= 0) {
+    throw new Error("租赁天数必须是正整数");
+  }
+
   const totalPayment = item.rentPerDay * BigInt(normalizedDays) + item.deposit;
   const tx = await contract.rentItem(item.id, normalizedDays, { value: totalPayment });
   const receipt = await tx.wait();
@@ -134,6 +138,13 @@ export async function confirmReturn(contract, rentalId) {
 
 export async function unlistItem(contract, itemId) {
   const tx = await contract.unlistItem(itemId);
+  const receipt = await tx.wait();
+
+  return { tx, receipt };
+}
+
+export async function relistItem(contract, itemId) {
+  const tx = await contract.relistItem(itemId);
   const receipt = await tx.wait();
 
   return { tx, receipt };

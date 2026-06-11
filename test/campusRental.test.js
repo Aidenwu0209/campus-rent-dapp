@@ -252,7 +252,35 @@ contract("CampusRental", (accounts) => {
     assert.equal(availableItems.length, 0);
   });
 
-  it("TC13 rejects unlisting a rented item", async () => {
+  it("TC13 relists an unlisted item", async () => {
+    await createDefaultItem();
+    await rental.unlistItem(1, { from: publisher });
+
+    const tx = await rental.relistItem(1, { from: publisher });
+    expectEvent(tx, "ItemRelisted");
+
+    const item = await rental.getItem(1);
+    const availableItems = await rental.getAvailableItems();
+
+    assert.equal(item.status.toString(), "0");
+    assert.equal(availableItems.length, 1);
+  });
+
+  it("TC14 rejects invalid relist operations", async () => {
+    await createDefaultItem();
+
+    await expectRevert(
+      rental.relistItem(1, { from: other }),
+      "Only item owner can operate"
+    );
+
+    await expectRevert(
+      rental.relistItem(1, { from: publisher }),
+      "Item is not unlisted"
+    );
+  });
+
+  it("TC15 rejects unlisting a rented item", async () => {
     await createDefaultItem();
     await rentDefaultItem();
 
@@ -262,7 +290,7 @@ contract("CampusRental", (accounts) => {
     );
   });
 
-  it("rejects renting an unlisted item and owner-only unlisting violations", async () => {
+  it("TC16 rejects renting an unlisted item and owner-only unlisting violations", async () => {
     await createDefaultItem();
 
     await expectRevert(

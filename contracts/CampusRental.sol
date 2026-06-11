@@ -57,6 +57,7 @@ contract CampusRental {
         uint256 deposit
     );
     event ItemUnlisted(uint256 indexed itemId, address indexed owner);
+    event ItemRelisted(uint256 indexed itemId, address indexed owner);
     event ItemRented(
         uint256 indexed rentalId,
         uint256 indexed itemId,
@@ -226,6 +227,19 @@ contract CampusRental {
         item.status = ItemStatus.Unlisted;
 
         emit ItemUnlisted(itemId, msg.sender);
+    }
+
+    function relistItem(uint256 itemId)
+        external
+        itemExists(itemId)
+        onlyItemOwner(itemId)
+    {
+        Item storage item = items[itemId];
+        require(item.status == ItemStatus.Unlisted, "Item is not unlisted");
+
+        item.status = ItemStatus.Available;
+
+        emit ItemRelisted(itemId, msg.sender);
     }
 
     function getItem(uint256 itemId) external view itemExists(itemId) returns (Item memory) {

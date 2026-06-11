@@ -7,7 +7,7 @@
     "compile": "truffle compile",
     "migrate": "truffle migrate --network development --reset",
     "test": "truffle test",
-    "ganache": "ganache --wallet.totalAccounts 10 --chain.chainId 1337 --server.host 127.0.0.1 --server.port 7545"
+    "ganache": "ganache --wallet.totalAccounts 10 --chain.chainId 1337 --chain.networkId 1337 --server.host 127.0.0.1 --server.port 7545"
   },
   "devDependencies": {
     "ganache": "^7.9.2",

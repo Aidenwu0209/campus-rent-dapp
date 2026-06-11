@@ -3,8 +3,14 @@ export default function TxStatus({ state }) {
     return null;
   }
 
+  const statusClass = state.error
+    ? "tx-status error"
+    : state.loading
+      ? "tx-status pending"
+      : "tx-status success";
+
   return (
-    <div className={state.error ? "tx-status error" : "tx-status"}>
+    <div className={statusClass}>
       {state.message && <p>{state.message}</p>}
       {state.error && <p>{state.error}</p>}
       {state.txHash && (

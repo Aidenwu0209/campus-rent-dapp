@@ -6,7 +6,7 @@ import {
 } from "../services/campusRentalService.js";
 import { toUserError } from "../utils/errors.js";
 
-export function useContractData(readContract, account) {
+export function useContractData(readContract, account, hasProvider = true, networkReady = true) {
   const [refreshIndex, setRefreshIndex] = useState(0);
   const [state, setState] = useState({
     items: [],
@@ -30,7 +30,11 @@ export function useContractData(readContract, account) {
           publishedItems: [],
           rentalRecords: [],
           loading: false,
-          error: "请先安装 MetaMask 并确认合约地址已生成"
+          error: !hasProvider
+            ? "请先安装 MetaMask 并确认合约地址已生成"
+            : !networkReady
+              ? "请切换到 Ganache Chain ID 1337 后读取链上数据"
+              : "请确认合约地址已生成"
         });
         return;
       }
@@ -69,7 +73,7 @@ export function useContractData(readContract, account) {
     return () => {
       cancelled = true;
     };
-  }, [readContract, account, refreshIndex]);
+  }, [readContract, account, hasProvider, networkReady, refreshIndex]);
 
   return {
     ...state,

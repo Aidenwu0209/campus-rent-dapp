@@ -1,9 +1,9 @@
 import EmptyState from "../../components/EmptyState.jsx";
 import RentalCard from "./RentalCard.jsx";
 
-export default function RentalList({ records, emptyTitle, ...cardProps }) {
+export default function RentalList({ records, emptyTitle, emptyDescription = "当前钱包暂无链上租赁记录", ...cardProps }) {
   if (!records.length) {
-    return <EmptyState title={emptyTitle} description="当前钱包暂无链上租赁记录" />;
+    return <EmptyState title={emptyTitle} description={emptyDescription} />;
   }
 
   return (

@@ -6,12 +6,13 @@ import PublishPage from "./pages/PublishPage.jsx";
 import MyPublishedPage from "./pages/MyPublishedPage.jsx";
 import MyRentalsPage from "./pages/MyRentalsPage.jsx";
 import WalletPanel from "./features/wallet/WalletPanel.jsx";
+import { isSupportedLocalChain } from "./app/config.js";
 import { useWallet } from "./hooks/useWallet.js";
 import { useCampusRental } from "./hooks/useCampusRental.js";
 import { useContractData } from "./hooks/useContractData.js";
 
 const tabs = [
-  { id: "home", label: "物品列表" },
+  { id: "home", label: "物品大厅" },
   { id: "publish", label: "发布物品" },
   { id: "published", label: "我的发布" },
   { id: "rentals", label: "我的租赁" }
@@ -21,15 +22,19 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("home");
   const wallet = useWallet();
   const campusRental = useCampusRental(wallet.account);
-  const contractData = useContractData(campusRental.readContract, wallet.account);
+  const networkReady = isSupportedLocalChain(wallet.chainId);
+  const readContract = networkReady ? campusRental.readContract : null;
+  const writeContract = networkReady ? campusRental.writeContract : null;
+  const contractData = useContractData(readContract, wallet.account, wallet.hasProvider, networkReady);
 
   const pageProps = useMemo(() => ({
     account: wallet.account,
-    readContract: campusRental.readContract,
-    writeContract: campusRental.writeContract,
+    readContract,
+    writeContract,
+    networkReady,
     data: contractData,
     refreshWallet: wallet.refreshWallet
-  }), [wallet.account, wallet.refreshWallet, campusRental.readContract, campusRental.writeContract, contractData]);
+  }), [wallet.account, wallet.refreshWallet, readContract, writeContract, networkReady, contractData]);
 
   return (
     <Layout
