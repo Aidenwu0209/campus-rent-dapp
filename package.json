@@ -1,0 +1,16 @@
+{
+  "name": "campus-rent-dapp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "基于区块链的校园共享物品租赁平台 DApp",
+  "scripts": {
+    "compile": "truffle compile",
+    "migrate": "truffle migrate --network development --reset",
+    "test": "truffle test",
+    "ganache": "ganache --wallet.totalAccounts 10 --chain.chainId 1337 --server.host 127.0.0.1 --server.port 7545"
+  },
+  "devDependencies": {
+    "ganache": "^7.9.2",
+    "truffle": "^5.11.5"
+  }
+}
