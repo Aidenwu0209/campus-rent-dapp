@@ -1,0 +1,415 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+  background: #f7f8fb;
+  color: #172033;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #f7f8fb;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.topbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 440px);
+  gap: 24px;
+  align-items: start;
+  padding: 28px 32px;
+  background: #ffffff;
+  border-bottom: 1px solid #dfe5ee;
+}
+
+.topbar h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 760;
+}
+
+.topbar p {
+  margin: 0;
+  color: #647187;
+  line-height: 1.6;
+}
+
+.wallet-panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #dfe5ee;
+  border-radius: 8px;
+}
+
+.wallet-grid {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 8px 12px;
+  font-size: 13px;
+}
+
+.wallet-grid span,
+.meta-grid dt {
+  color: #718096;
+}
+
+.wallet-grid strong,
+.meta-grid dd {
+  min-width: 0;
+  margin: 0;
+  color: #1d2738;
+  overflow-wrap: anywhere;
+}
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+  padding: 24px 32px 40px;
+}
+
+.nav-tabs {
+  display: grid;
+  gap: 8px;
+  position: sticky;
+  top: 16px;
+}
+
+.nav-tab {
+  width: 100%;
+  padding: 12px 14px;
+  text-align: left;
+  color: #3f4d63;
+  background: transparent;
+  border-radius: 8px;
+}
+
+.nav-tab:hover,
+.nav-tab.active {
+  background: #ffffff;
+  color: #0f5132;
+  box-shadow: inset 0 0 0 1px #c9d6cf;
+}
+
+.content-panel {
+  min-width: 0;
+}
+
+.page-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.page-stack.narrow {
+  max-width: 820px;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+}
+
+.section-heading h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.section-heading p {
+  margin: 0;
+  color: #647187;
+  line-height: 1.55;
+}
+
+.loading-text,
+.permission-hint,
+.payment-preview {
+  color: #647187;
+  font-size: 13px;
+}
+
+.item-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.item-card {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  background: #ffffff;
+  border: 1px solid #dfe5ee;
+  border-radius: 8px;
+}
+
+.card-title-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.card-title-row h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.card-title-row p {
+  margin: 0;
+  color: #647187;
+  line-height: 1.5;
+}
+
+.status-badge {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #eef2f7;
+  color: #475569;
+}
+
+.status-0 {
+  background: #e9f8ef;
+  color: #166534;
+}
+
+.status-1 {
+  background: #fff4de;
+  color: #92400e;
+}
+
+.status-2 {
+  background: #e9f0ff;
+  color: #1d4ed8;
+}
+
+.status-3 {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.meta-grid dt {
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+.meta-grid dd {
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: end;
+  padding-top: 4px;
+}
+
+.action-row label,
+.form-grid label {
+  display: grid;
+  gap: 6px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 11px;
+  background: #ffffff;
+  color: #172033;
+  outline: none;
+}
+
+textarea {
+  min-height: 108px;
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #2f855a;
+  box-shadow: 0 0 0 3px rgba(47, 133, 90, 0.12);
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 40px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 720;
+}
+
+.primary-button {
+  color: #ffffff;
+  background: #1f7a4d;
+}
+
+.primary-button:hover:not(:disabled) {
+  background: #17623d;
+}
+
+.secondary-button {
+  color: #1f3a5f;
+  background: #e8eef7;
+}
+
+.secondary-button:hover:not(:disabled) {
+  background: #dbe6f4;
+}
+
+.tx-status,
+.empty-state,
+.error-message {
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.tx-status {
+  color: #164e63;
+  background: #ecfeff;
+  border: 1px solid #bae6fd;
+}
+
+.tx-status.error,
+.error-message,
+.inline-error {
+  color: #991b1b;
+}
+
+.tx-status.error,
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.tx-status p,
+.empty-state p,
+.error-message p {
+  margin: 0;
+}
+
+.tx-status p + p {
+  margin-top: 6px;
+}
+
+.empty-state {
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+}
+
+.empty-state strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.empty-state p {
+  color: #647187;
+}
+
+.form-grid {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #dfe5ee;
+  border-radius: 8px;
+}
+
+.three-column {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.inline-error {
+  margin: 0;
+  font-size: 13px;
+}
+
+@media (max-width: 860px) {
+  .topbar,
+  .main-layout {
+    grid-template-columns: 1fr;
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .nav-tabs {
+    position: static;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .section-heading {
+    display: grid;
+  }
+
+  .three-column,
+  .meta-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .topbar h1 {
+    font-size: 23px;
+  }
+
+  .item-list {
+    grid-template-columns: 1fr;
+  }
+
+  .wallet-grid {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .nav-tabs {
+    grid-template-columns: 1fr;
+  }
+}
