@@ -1,10 +1,12 @@
 const CampusRental = artifacts.require("CampusRental");
 
 contract("CampusRental", (accounts) => {
+  // 测试账户分工：发布者负责发布/下架/确认归还，租赁者负责租赁/申请归还。
   const publisher = accounts[1];
   const renter = accounts[2];
   const other = accounts[3];
 
+  // 默认测试物品参数，金额单位为 wei。
   const rentPerDay = web3.utils.toWei("0.01", "ether");
   const deposit = web3.utils.toWei("0.05", "ether");
   const maxRentalDays = 7;
@@ -14,6 +16,7 @@ contract("CampusRental", (accounts) => {
 
   const toBN = (value) => web3.utils.toBN(value);
 
+  // 统一校验失败交易，避免不同 Ganache/Truffle 版本的错误对象格式影响测试阅读。
   const expectRevert = async (promise, expectedMessage) => {
     try {
       await promise;
@@ -32,23 +35,28 @@ contract("CampusRental", (accounts) => {
     }
   };
 
+  // 从交易回执中取出指定事件，验证合约关键业务事件已正确触发。
   const expectEvent = (tx, eventName) => {
     const event = tx.logs.find((log) => log.event === eventName);
     assert(event, `Expected ${eventName} event`);
     return event;
   };
 
-  const createDefaultItem = async (from = publisher) => rental.createItem(
-    "校园充电宝",
-    "适合图书馆和教学楼临时使用",
-    rentPerDay,
-    deposit,
-    maxRentalDays,
-    { from }
-  );
+  const createDefaultItem = async (from = publisher) =>
+    rental.createItem(
+      "校园充电宝",
+      "适合图书馆和教学楼临时使用",
+      rentPerDay,
+      deposit,
+      maxRentalDays,
+      { from }
+    );
 
   const rentDefaultItem = async (itemId = 1, from = renter) => {
-    const totalPayment = toBN(rentPerDay).mul(toBN(rentDays)).add(toBN(deposit));
+    const totalPayment = toBN(rentPerDay)
+      .mul(toBN(rentDays))
+      .add(toBN(deposit));
+
     return rental.rentItem(itemId, rentDays, { from, value: totalPayment });
   };
 
@@ -56,6 +64,7 @@ contract("CampusRental", (accounts) => {
     rental = await CampusRental.new();
   });
 
+  // 覆盖：发布物品成功，并验证 ItemCreated 事件与链上物品字段。
   it("TC01 publishes an item successfully", async () => {
     const tx = await createDefaultItem();
     const event = expectEvent(tx, "ItemCreated");
@@ -70,21 +79,30 @@ contract("CampusRental", (accounts) => {
     assert.equal(item.status.toString(), "0");
   });
 
+  // 覆盖：名称、描述、租金、押金、最大租期等非法参数发布失败。
   it("TC02 rejects invalid item parameters", async () => {
     await expectRevert(
-      rental.createItem("", "描述", rentPerDay, deposit, maxRentalDays, { from: publisher }),
+      rental.createItem("", "描述", rentPerDay, deposit, maxRentalDays, {
+        from: publisher
+      }),
       "Name is required"
     );
     await expectRevert(
-      rental.createItem("教材", "", rentPerDay, deposit, maxRentalDays, { from: publisher }),
+      rental.createItem("教材", "", rentPerDay, deposit, maxRentalDays, {
+        from: publisher
+      }),
       "Description is required"
     );
     await expectRevert(
-      rental.createItem("教材", "描述", 0, deposit, maxRentalDays, { from: publisher }),
+      rental.createItem("教材", "描述", 0, deposit, maxRentalDays, {
+        from: publisher
+      }),
       "Rent per day must be greater than zero"
     );
     await expectRevert(
-      rental.createItem("教材", "描述", rentPerDay, 0, maxRentalDays, { from: publisher }),
+      rental.createItem("教材", "描述", rentPerDay, 0, maxRentalDays, {
+        from: publisher
+      }),
       "Deposit must be greater than zero"
     );
     await expectRevert(
@@ -93,6 +111,7 @@ contract("CampusRental", (accounts) => {
     );
   });
 
+  // 覆盖：物品列表、可租赁列表和“我的发布”查询。
   it("TC03 returns all and available item lists", async () => {
     await createDefaultItem();
 
@@ -106,6 +125,7 @@ contract("CampusRental", (accounts) => {
     assert.equal(allItems[0].name, "校园充电宝");
   });
 
+  // 覆盖：正确金额租赁成功，合约托管租金和押金，并记录活跃租赁。
   it("TC04 rents an item with the correct payment", async () => {
     await createDefaultItem();
 
@@ -125,9 +145,13 @@ contract("CampusRental", (accounts) => {
     assert.equal(record.status.toString(), "0");
     assert.equal(activeRentalId.toString(), "1");
     assert.equal(renterRecords.length, 1);
-    assert.equal(await web3.eth.getBalance(rental.address), web3.utils.toWei("0.07", "ether"));
+    assert.equal(
+      await web3.eth.getBalance(rental.address),
+      web3.utils.toWei("0.07", "ether")
+    );
   });
 
+  // 覆盖：租赁支付金额不足或错误时交易回滚。
   it("TC05 rejects insufficient or incorrect payment", async () => {
     await createDefaultItem();
 
@@ -140,6 +164,7 @@ contract("CampusRental", (accounts) => {
     );
   });
 
+  // 覆盖：物品已被租赁后，不能被其他用户重复租赁。
   it("TC06 rejects renting an already rented item", async () => {
     await createDefaultItem();
     await rentDefaultItem();
@@ -147,12 +172,14 @@ contract("CampusRental", (accounts) => {
     await expectRevert(rentDefaultItem(1, other), "Item is not available");
   });
 
+  // 覆盖：发布者不能租赁自己发布的物品。
   it("TC07 rejects item owner renting their own item", async () => {
     await createDefaultItem();
 
     await expectRevert(rentDefaultItem(1, publisher), "Item owner cannot rent own item");
   });
 
+  // 覆盖：租赁天数必须大于 0，且不能超过发布者设置的最大租期。
   it("rejects invalid rental days", async () => {
     await createDefaultItem();
 
@@ -169,6 +196,7 @@ contract("CampusRental", (accounts) => {
     );
   });
 
+  // 覆盖：非租赁者不能对租赁记录发起归还申请。
   it("TC08 rejects return requests from non-renters", async () => {
     await createDefaultItem();
     await rentDefaultItem();
@@ -179,6 +207,7 @@ contract("CampusRental", (accounts) => {
     );
   });
 
+  // 覆盖：租赁者申请归还成功，物品和租赁记录进入待确认归还状态。
   it("TC09 allows renter to request return", async () => {
     await createDefaultItem();
     await rentDefaultItem();
@@ -194,6 +223,7 @@ contract("CampusRental", (accounts) => {
     assert.notEqual(record.returnRequestedAt.toString(), "0");
   });
 
+  // 覆盖：非发布者不能确认归还。
   it("TC10 rejects return confirmation from non-owners", async () => {
     await createDefaultItem();
     await rentDefaultItem();
@@ -205,6 +235,7 @@ contract("CampusRental", (accounts) => {
     );
   });
 
+  // 覆盖：发布者确认归还成功，押金退还租赁者，租金结算给发布者。
   it("TC11 lets owner confirm return, refund deposit, and receive rent", async () => {
     await createDefaultItem();
     await rentDefaultItem();
@@ -217,7 +248,9 @@ contract("CampusRental", (accounts) => {
     const event = expectEvent(tx, "ReturnConfirmed");
 
     const receipt = await web3.eth.getTransactionReceipt(tx.tx);
-    const gasCost = toBN(receipt.gasUsed).mul(toBN(tx.receipt.effectiveGasPrice));
+    const gasCost = toBN(receipt.gasUsed).mul(
+      toBN(tx.receipt.effectiveGasPrice)
+    );
 
     const renterAfter = toBN(await web3.eth.getBalance(renter));
     const publisherAfter = toBN(await web3.eth.getBalance(publisher));
@@ -226,7 +259,10 @@ contract("CampusRental", (accounts) => {
     assert.equal(event.args.rentAmount.toString(), expectedRent.toString());
     assert.equal(event.args.depositAmount.toString(), deposit);
     assert.equal(renterAfter.sub(renterBefore).toString(), deposit);
-    assert.equal(publisherAfter.sub(publisherBefore).add(gasCost).toString(), expectedRent.toString());
+    assert.equal(
+      publisherAfter.sub(publisherBefore).add(gasCost).toString(),
+      expectedRent.toString()
+    );
     assert.equal(await web3.eth.getBalance(rental.address), "0");
 
     const item = await rental.getItem(1);
@@ -239,6 +275,7 @@ contract("CampusRental", (accounts) => {
     assert.equal(activeRentalId.toString(), "0");
   });
 
+  // 覆盖：发布者可以下架当前可租赁物品，下架后不再出现在可租赁列表。
   it("TC12 unlists an available item", async () => {
     await createDefaultItem();
 
@@ -252,6 +289,7 @@ contract("CampusRental", (accounts) => {
     assert.equal(availableItems.length, 0);
   });
 
+  // 覆盖：已下架物品可以由发布者重新上架。
   it("TC13 relists an unlisted item", async () => {
     await createDefaultItem();
     await rental.unlistItem(1, { from: publisher });
@@ -266,6 +304,7 @@ contract("CampusRental", (accounts) => {
     assert.equal(availableItems.length, 1);
   });
 
+  // 覆盖：非发布者不能重新上架，未下架物品不能重复上架。
   it("TC14 rejects invalid relist operations", async () => {
     await createDefaultItem();
 
@@ -280,6 +319,7 @@ contract("CampusRental", (accounts) => {
     );
   });
 
+  // 覆盖：租赁中的物品不能被下架。
   it("TC15 rejects unlisting a rented item", async () => {
     await createDefaultItem();
     await rentDefaultItem();
@@ -290,6 +330,7 @@ contract("CampusRental", (accounts) => {
     );
   });
 
+  // 覆盖：非发布者不能下架；已下架物品不可租赁。
   it("TC16 rejects renting an unlisted item and owner-only unlisting violations", async () => {
     await createDefaultItem();
 
