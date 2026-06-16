@@ -119,6 +119,8 @@ http://127.0.0.1:5173/
 
 完整演示清单见 [docs/demo-checklist.md](docs/demo-checklist.md)。
 
+如果需要让其他同学或老师在自己的电脑上运行本项目，请参考 [docs/local-ganache-user-guide.md](docs/local-ganache-user-guide.md)。该文档说明了如何 clone 仓库、启动本地 Ganache、使用自己的 MetaMask、导入本机测试账户、部署合约并完成发布和租赁流程。
+
 ## 评分自查
 
 评分点对照见 [docs/score-checklist.md](docs/score-checklist.md)。
@@ -153,4 +155,5 @@ npm run migrate
 
 - [docs/score-checklist.md](docs/score-checklist.md)
 - [docs/demo-checklist.md](docs/demo-checklist.md)
+- [docs/local-ganache-user-guide.md](docs/local-ganache-user-guide.md)
 - [docs/todo-issues.md](docs/todo-issues.md)
