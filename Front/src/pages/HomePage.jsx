@@ -4,16 +4,17 @@ import ItemList from "../features/items/ItemList.jsx";
 import { useTxState } from "../hooks/useTxState.js";
 import { ITEM_STATUS } from "../models/status.js";
 import { rentItem } from "../services/campusRentalService.js";
+import { Box, CalendarDays, CheckCircle2, Clock3, LockKeyhole, Send } from "lucide-react";
 
-export default function HomePage({ account, writeContract, data, refreshWallet }) {
+export default function HomePage({ account, writeContract, data, refreshWallet, transactionDisabledReason, goToPublish }) {
   const { txState, runTransaction } = useTxState();
   const stats = [
-    { label: "全部物品", value: data.items.length },
-    { label: "可租赁", value: data.items.filter((item) => item.status === ITEM_STATUS.Available).length },
-    { label: "已租赁", value: data.items.filter((item) => item.status === ITEM_STATUS.Rented).length },
-    { label: "待确认归还", value: data.items.filter((item) => item.status === ITEM_STATUS.ReturnRequested).length },
-    { label: "我的发布", value: data.publishedItems.length },
-    { label: "我的租赁", value: data.rentalRecords.length }
+    { label: "全部物品", value: data.items.length, icon: Box },
+    { label: "可租赁", value: data.items.filter((item) => item.status === ITEM_STATUS.Available).length, icon: CheckCircle2 },
+    { label: "已租赁", value: data.items.filter((item) => item.status === ITEM_STATUS.Rented).length, icon: LockKeyhole },
+    { label: "待确认归还", value: data.items.filter((item) => item.status === ITEM_STATUS.ReturnRequested).length, icon: Clock3 },
+    { label: "我的发布", value: data.publishedItems.length, icon: Send },
+    { label: "我的租赁", value: data.rentalRecords.length, icon: CalendarDays }
   ];
 
   const handleRent = async (item, rentDays) => {
@@ -47,6 +48,7 @@ export default function HomePage({ account, writeContract, data, refreshWallet }
       <section className="stats-grid" aria-label="链上物品统计">
         {stats.map((stat) => (
           <div className="stat-card" key={stat.label}>
+            <span className="stat-icon"><stat.icon size={24} aria-hidden="true" /></span>
             <span>{stat.label}</span>
             <strong>{stat.value}</strong>
           </div>
@@ -58,8 +60,11 @@ export default function HomePage({ account, writeContract, data, refreshWallet }
         items={data.items}
         emptyTitle="物品大厅暂时为空"
         emptyDescription="当前还没有上架物品。可以到“发布物品”创建一件校园共享物品。"
+        emptyActionLabel="发布物品"
+        onEmptyAction={goToPublish}
         account={account}
         actionsDisabled={!writeContract}
+        actionDisabledReason={transactionDisabledReason}
         actionLoading={txState.loading}
         onRent={handleRent}
       />

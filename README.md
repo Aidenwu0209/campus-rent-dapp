@@ -69,6 +69,7 @@ npm run ganache
 - RPC：`127.0.0.1:7545`
 - Chain ID：`1337`
 - Network ID：`1337`
+- 测试账户：`--wallet.deterministic` 固定生成，MetaMask 导入一次账户 A、账户 B 后，后续通常不需要反复导入
 
 ## 编译、部署、测试
 
@@ -85,7 +86,7 @@ npm test
 - `Front/src/contracts/CampusRental.json`
 - `Front/src/contracts/campusRentalAddress.json`
 
-如果重启 Ganache 或重新部署，需要再次执行 `npm run migrate`，确保前端读取最新合约地址。
+如果重启 Ganache 或重新部署，需要再次执行 `npm run migrate`，确保前端读取最新合约地址。固定账户只保证测试账户稳定，不会保留旧合约里的物品和租赁数据。
 
 ## 启动前端
 
@@ -145,7 +146,7 @@ npm run migrate
 
 ### MetaMask 没有测试 ETH
 
-使用 Ganache 生成的测试账户，或将 Ganache 测试账户导入 MetaMask。不要使用真实账户私钥。
+使用 Ganache 生成的测试账户，或将 Ganache 测试账户导入 MetaMask。当前脚本已固定 Ganache 测试账户，第一次导入账户 A、账户 B 后，只要不重置 MetaMask，后续演示不需要重复导入。不要使用真实账户私钥。
 
 ### 交易失败但页面没变化
 

@@ -5,7 +5,7 @@ import PublishItemForm from "../features/items/PublishItemForm.jsx";
 import { useTxState } from "../hooks/useTxState.js";
 import { createItem } from "../services/campusRentalService.js";
 
-export default function PublishPage({ account, writeContract, data, refreshWallet }) {
+export default function PublishPage({ account, writeContract, data, refreshWallet, transactionDisabledReason }) {
   const { txState, runTransaction } = useTxState();
 
   const handleCreateItem = async (form) => {
@@ -31,19 +31,13 @@ export default function PublishPage({ account, writeContract, data, refreshWalle
   }
 
   return (
-    <div className="page-stack">
-      <section className="page-hero-card compact">
-        <div>
-          <span className="eyebrow">发布物品</span>
-          <h2>发布物品</h2>
-          <p>填写物品信息、日租金、押金和最大租赁天数，提交后写入智能合约。</p>
-        </div>
-      </section>
+    <div className="page-stack publish-page">
       <ErrorMessage message={data.error} />
       <TxStatus state={txState} />
       <PublishItemForm
         loading={txState.loading}
         disabled={!writeContract}
+        disabledReason={transactionDisabledReason}
         onSubmit={handleCreateItem}
       />
     </div>

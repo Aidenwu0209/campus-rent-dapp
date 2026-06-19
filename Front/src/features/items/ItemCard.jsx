@@ -10,6 +10,7 @@ export default function ItemCard({
   account,
   mode = "list",
   actionsDisabled = false,
+  actionDisabledReason = "",
   actionLoading,
   onRent,
   onUnlist,
@@ -34,7 +35,7 @@ export default function ItemCard({
   const rentDisabledReason = !account
     ? "请先连接钱包"
     : actionsDisabled
-      ? "请切换到 Ganache Chain ID 1337 后再交易"
+      ? actionDisabledReason || "请切换到 Ganache Chain ID 1337 后再交易"
       : permission.isOwner
       ? "发布者不能租赁自己的物品"
       : item.status !== ITEM_STATUS.Available
@@ -159,7 +160,7 @@ export default function ItemCard({
             </LoadingButton>
           )}
           {actionsDisabled && hasPublishedAction && (
-            <span className="permission-hint">请切换到 Ganache Chain ID 1337 后再交易</span>
+            <span className="permission-hint">{actionDisabledReason || "请切换到 Ganache Chain ID 1337 后再交易"}</span>
           )}
           {!hasPublishedAction && (
             <span className="permission-hint">当前账户或状态下无可执行操作</span>

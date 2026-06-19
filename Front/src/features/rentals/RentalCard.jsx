@@ -4,7 +4,7 @@ import { RENTAL_STATUS } from "../../models/status.js";
 import { shortAddress } from "../../utils/format.js";
 import { getRentalPermission } from "./rentalMappers.js";
 
-export default function RentalCard({ rental, account, actionsDisabled = false, actionLoading, onRequestReturn }) {
+export default function RentalCard({ rental, account, actionsDisabled = false, actionDisabledReason = "", actionLoading, onRequestReturn }) {
   const permission = getRentalPermission(rental, account);
   const steps = [
     { status: RENTAL_STATUS.Active, label: "租赁中" },
@@ -82,7 +82,7 @@ export default function RentalCard({ rental, account, actionsDisabled = false, a
               申请归还
             </LoadingButton>
             {actionsDisabled && (
-              <span className="permission-hint">请切换到 Ganache Chain ID 1337 后再交易</span>
+              <span className="permission-hint">{actionDisabledReason || "请切换到 Ganache Chain ID 1337 后再交易"}</span>
             )}
           </>
         ) : rental.status === RENTAL_STATUS.ReturnRequested ? (

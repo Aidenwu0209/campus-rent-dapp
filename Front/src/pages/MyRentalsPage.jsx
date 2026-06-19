@@ -5,14 +5,15 @@ import RentalList from "../features/rentals/RentalList.jsx";
 import { useTxState } from "../hooks/useTxState.js";
 import { RENTAL_STATUS } from "../models/status.js";
 import { requestReturn } from "../services/campusRentalService.js";
+import { CalendarDays, CheckCircle2, Clock3, RotateCcw } from "lucide-react";
 
-export default function MyRentalsPage({ account, writeContract, data, refreshWallet }) {
+export default function MyRentalsPage({ account, writeContract, data, refreshWallet, transactionDisabledReason, goToHome }) {
   const { txState, runTransaction } = useTxState();
   const rentalStats = [
-    { label: "我的租赁", value: data.rentalRecords.length },
-    { label: "租赁中", value: data.rentalRecords.filter((record) => record.status === RENTAL_STATUS.Active).length },
-    { label: "已申请归还", value: data.rentalRecords.filter((record) => record.status === RENTAL_STATUS.ReturnRequested).length },
-    { label: "已完成", value: data.rentalRecords.filter((record) => record.status === RENTAL_STATUS.Completed).length }
+    { label: "我的租赁", value: data.rentalRecords.length, icon: CalendarDays },
+    { label: "租赁中", value: data.rentalRecords.filter((record) => record.status === RENTAL_STATUS.Active).length, icon: Clock3 },
+    { label: "已申请归还", value: data.rentalRecords.filter((record) => record.status === RENTAL_STATUS.ReturnRequested).length, icon: RotateCcw },
+    { label: "已完成", value: data.rentalRecords.filter((record) => record.status === RENTAL_STATUS.Completed).length, icon: CheckCircle2 }
   ];
 
   const handleRequestReturn = async (rental) => {
@@ -50,6 +51,7 @@ export default function MyRentalsPage({ account, writeContract, data, refreshWal
       <section className="stats-grid compact" aria-label="我的租赁统计">
         {rentalStats.map((stat) => (
           <div className="stat-card" key={stat.label}>
+            <span className="stat-icon"><stat.icon size={24} aria-hidden="true" /></span>
             <span>{stat.label}</span>
             <strong>{stat.value}</strong>
           </div>
@@ -61,8 +63,11 @@ export default function MyRentalsPage({ account, writeContract, data, refreshWal
         records={data.rentalRecords}
         emptyTitle="暂无租赁记录"
         emptyDescription="当前钱包还没有租赁记录。可以到物品大厅选择非本人发布的可租赁物品。"
+        emptyActionLabel="前往物品大厅"
+        onEmptyAction={goToHome}
         account={account}
         actionsDisabled={!writeContract}
+        actionDisabledReason={transactionDisabledReason}
         actionLoading={txState.loading}
         onRequestReturn={handleRequestReturn}
       />

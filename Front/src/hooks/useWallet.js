@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { getWalletSnapshot, hasEthereumProvider, requestWallet } from "../services/walletService.js";
+import {
+  getWalletSnapshot,
+  hasEthereumProvider,
+  requestAccountSwitch,
+  requestWallet
+} from "../services/walletService.js";
 import { toUserError } from "../utils/errors.js";
 
 const initialState = {
@@ -34,6 +39,17 @@ export function useWallet() {
     }
   }, []);
 
+  const switchAccount = useCallback(async () => {
+    setWallet((current) => ({ ...current, loading: true, error: "" }));
+
+    try {
+      const snapshot = await requestAccountSwitch();
+      setWallet((current) => ({ ...current, ...snapshot, loading: false, error: "" }));
+    } catch (error) {
+      setWallet((current) => ({ ...current, loading: false, error: toUserError(error) }));
+    }
+  }, []);
+
   useEffect(() => {
     refreshWallet();
 
@@ -62,6 +78,7 @@ export function useWallet() {
     ...wallet,
     hasProvider: hasEthereumProvider(),
     connectWallet,
+    switchAccount,
     refreshWallet
   };
 }

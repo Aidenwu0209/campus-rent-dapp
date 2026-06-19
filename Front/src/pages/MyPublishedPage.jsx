@@ -10,14 +10,15 @@ import {
   relistItem,
   unlistItem
 } from "../services/campusRentalService.js";
+import { ArrowDownToLine, Box, Clock3, Crown } from "lucide-react";
 
-export default function MyPublishedPage({ account, readContract, writeContract, data, refreshWallet }) {
+export default function MyPublishedPage({ account, readContract, writeContract, data, refreshWallet, transactionDisabledReason, goToPublish }) {
   const { txState, runTransaction } = useTxState();
   const publishedStats = [
-    { label: "我发布的物品", value: data.publishedItems.length },
-    { label: "可下架", value: data.publishedItems.filter((item) => item.status === ITEM_STATUS.Available).length },
-    { label: "出租中", value: data.publishedItems.filter((item) => item.status === ITEM_STATUS.Rented).length },
-    { label: "待确认归还", value: data.publishedItems.filter((item) => item.status === ITEM_STATUS.ReturnRequested).length }
+    { label: "我发布的物品", value: data.publishedItems.length, icon: Box },
+    { label: "可下架", value: data.publishedItems.filter((item) => item.status === ITEM_STATUS.Available).length, icon: ArrowDownToLine },
+    { label: "出租中", value: data.publishedItems.filter((item) => item.status === ITEM_STATUS.Rented).length, icon: Crown },
+    { label: "待确认归还", value: data.publishedItems.filter((item) => item.status === ITEM_STATUS.ReturnRequested).length, icon: Clock3 }
   ];
 
   const handleUnlist = async (item) => {
@@ -94,6 +95,7 @@ export default function MyPublishedPage({ account, readContract, writeContract, 
       <section className="stats-grid compact" aria-label="我的发布统计">
         {publishedStats.map((stat) => (
           <div className="stat-card" key={stat.label}>
+            <span className="stat-icon"><stat.icon size={24} aria-hidden="true" /></span>
             <span>{stat.label}</span>
             <strong>{stat.value}</strong>
           </div>
@@ -105,9 +107,12 @@ export default function MyPublishedPage({ account, readContract, writeContract, 
         items={data.publishedItems}
         emptyTitle="暂无发布记录"
         emptyDescription="当前钱包还没有发布过物品。发布后可以在这里管理下架、重新上架和确认归还。"
+        emptyActionLabel="发布物品"
+        onEmptyAction={goToPublish}
         account={account}
         mode="published"
         actionsDisabled={!writeContract}
+        actionDisabledReason={transactionDisabledReason}
         actionLoading={txState.loading}
         onUnlist={handleUnlist}
         onRelist={handleRelist}
