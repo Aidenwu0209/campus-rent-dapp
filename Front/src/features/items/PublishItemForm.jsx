@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Box, CalendarDays, FileText, Link2, ShieldCheck } from "lucide-react";
 import LoadingButton from "../../components/LoadingButton.jsx";
 import StatusBadge from "../../components/StatusBadge.jsx";
 
@@ -10,7 +11,7 @@ const initialForm = {
   maxRentalDays: "7"
 };
 
-export default function PublishItemForm({ loading, disabled, onSubmit }) {
+export default function PublishItemForm({ loading, disabled, disabledReason, onSubmit }) {
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState("");
   const rentValue = Number(form.rentPerDayEth);
@@ -58,68 +59,95 @@ export default function PublishItemForm({ loading, disabled, onSubmit }) {
         <div className="form-title">
           <span className="eyebrow">创建租赁商品</span>
           <h3>填写物品信息</h3>
-          <p>金额单位为 ETH，提交时会自动转换为 wei 并写入智能合约。</p>
+          <p>名称、描述、租金、押金和租期会写入智能合约。</p>
         </div>
         <label className="form-field">
           物品名称
-          <input
-            disabled={disabled || loading}
-            value={form.name}
-            onChange={(event) => updateField("name", event.target.value)}
-            placeholder="例如：校园充电宝"
-          />
-          <span>建议写清楚品类和使用场景，方便租赁者快速判断。</span>
+          <span className="field-control">
+            <Box size={20} aria-hidden="true" />
+            <input
+              disabled={disabled || loading}
+              value={form.name}
+              maxLength={50}
+              onChange={(event) => updateField("name", event.target.value)}
+              placeholder="例如：校园充电宝"
+            />
+            <span className="field-count">{form.name.length}/50</span>
+          </span>
         </label>
         <label className="form-field">
           物品描述
-          <textarea
-            disabled={disabled || loading}
-            value={form.description}
-            onChange={(event) => updateField("description", event.target.value)}
-            placeholder="例如：适合图书馆和教学楼临时使用，支持 USB-C 和 Lightning。"
-          />
-          <span>描述会直接显示在物品大厅卡片中。</span>
+          <span className="field-control textarea-control">
+            <FileText size={20} aria-hidden="true" />
+            <textarea
+              disabled={disabled || loading}
+              value={form.description}
+              maxLength={200}
+              onChange={(event) => updateField("description", event.target.value)}
+              placeholder="例如：适合图书馆和教学楼临时使用，支持 USB-C 和 Lightning。"
+            />
+            <span className="field-count">{form.description.length}/200</span>
+          </span>
         </label>
         <div className="three-column">
           <label className="form-field">
             日租金 ETH
-            <input
-              type="number"
-              min="0"
-              step="0.0001"
-              disabled={disabled || loading}
-              value={form.rentPerDayEth}
-              onChange={(event) => updateField("rentPerDayEth", event.target.value)}
-            />
+            <span className="field-control compact-control">
+              <span className="currency-mark">Ξ</span>
+              <input
+                type="number"
+                min="0"
+                step="0.0001"
+                disabled={disabled || loading}
+                value={form.rentPerDayEth}
+                onChange={(event) => updateField("rentPerDayEth", event.target.value)}
+              />
+            </span>
           </label>
           <label className="form-field">
             押金 ETH
-            <input
-              type="number"
-              min="0"
-              step="0.0001"
-              disabled={disabled || loading}
-              value={form.depositEth}
-              onChange={(event) => updateField("depositEth", event.target.value)}
-            />
+            <span className="field-control compact-control">
+              <span className="currency-mark">Ξ</span>
+              <input
+                type="number"
+                min="0"
+                step="0.0001"
+                disabled={disabled || loading}
+                value={form.depositEth}
+                onChange={(event) => updateField("depositEth", event.target.value)}
+              />
+            </span>
           </label>
           <label className="form-field">
             最大租赁天数
-            <input
-              type="number"
-              min="1"
-              step="1"
-              disabled={disabled || loading}
-              value={form.maxRentalDays}
-              onChange={(event) => updateField("maxRentalDays", event.target.value)}
-            />
+            <span className="field-control compact-control days-control">
+              <CalendarDays size={18} aria-hidden="true" />
+              <input
+                type="number"
+                min="1"
+                step="1"
+                disabled={disabled || loading}
+                value={form.maxRentalDays}
+                onChange={(event) => updateField("maxRentalDays", event.target.value)}
+              />
+              <span className="field-unit">天</span>
+            </span>
           </label>
         </div>
-        {disabled && <p className="permission-hint">请连接 MetaMask 并切换到 Ganache Chain ID 1337 后发布。</p>}
+        {disabled && (
+          <p className="permission-hint">
+            {disabledReason || "请连接 MetaMask 并切换到 Ganache Chain ID 1337 后发布。"}
+          </p>
+        )}
         {error && <p className="inline-error">{error}</p>}
         <LoadingButton type="submit" className="primary-button" loading={loading} disabled={disabled}>
+          <Link2 size={21} aria-hidden="true" />
           发布到链上
         </LoadingButton>
+        <p className="chain-note">
+          <ShieldCheck size={18} aria-hidden="true" />
+          发布后信息将上链，公开透明且不可随意修改
+        </p>
       </div>
 
       <aside className="publish-preview-card" aria-label="发布预览">
@@ -150,6 +178,10 @@ export default function PublishItemForm({ loading, disabled, onSubmit }) {
           <strong>{previewOneDayTotal.toFixed(4).replace(/\.?0+$/, "")} ETH</strong>
           <p>包含 1 天租金和押金，归还确认后押金由合约退回。</p>
         </div>
+        <p className="preview-note">
+          <ShieldCheck size={18} aria-hidden="true" />
+          所有信息将永久记录在区块链上 · 公开透明 · 安全可信
+        </p>
       </aside>
     </form>
   );

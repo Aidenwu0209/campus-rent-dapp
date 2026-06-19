@@ -1,5 +1,8 @@
 import { ethers } from "ethers";
+import { GANACHE_CHAIN_ID, GANACHE_RPC_URL } from "../app/config.js";
 import { formatEth } from "../utils/format.js";
+
+const ganacheProvider = new ethers.JsonRpcProvider(GANACHE_RPC_URL);
 
 export function hasEthereumProvider() {
   return typeof window !== "undefined" && Boolean(window.ethereum);
@@ -24,6 +27,25 @@ export async function requestWallet() {
   return getWalletSnapshot(accounts[0]);
 }
 
+export async function requestAccountSwitch() {
+  const provider = getBrowserProvider();
+
+  if (!provider) {
+    throw new Error("请先安装 MetaMask 钱包");
+  }
+
+  try {
+    await provider.send("wallet_revokePermissions", [{ eth_accounts: {} }]);
+  } catch (error) {
+    if (error?.code === 4001 || error?.code === -32002) {
+      throw error;
+    }
+  }
+
+  const accounts = await provider.send("eth_requestAccounts", []);
+  return getWalletSnapshot(accounts[0]);
+}
+
 export async function getWalletSnapshot(preferredAccount) {
   const provider = getBrowserProvider();
 
@@ -39,7 +61,15 @@ export async function getWalletSnapshot(preferredAccount) {
   const accounts = preferredAccount ? [preferredAccount] : await provider.send("eth_accounts", []);
   const account = accounts[0] || "";
   const network = await provider.getNetwork();
-  const balance = account ? await provider.getBalance(account) : 0n;
+  let balance = account ? await provider.getBalance(account) : 0n;
+
+  if (account && network.chainId.toString() === GANACHE_CHAIN_ID) {
+    try {
+      balance = await ganacheProvider.getBalance(account);
+    } catch {
+      // Keep the injected-provider balance if the local read RPC is unavailable.
+    }
+  }
 
   return {
     account,

@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
+import { ethers } from "ethers";
+import { GANACHE_RPC_URL } from "../app/config.js";
 import { createCampusRentalContract, campusRentalAddress } from "../services/campusRentalService.js";
 import { getBrowserProvider, hasEthereumProvider } from "../services/walletService.js";
+
+const readProvider = new ethers.JsonRpcProvider(GANACHE_RPC_URL);
 
 export function useCampusRental(account) {
   const [state, setState] = useState({
@@ -25,12 +29,16 @@ export function useCampusRental(account) {
       }
 
       const provider = getBrowserProvider();
-      const readContract = createCampusRentalContract(provider);
+      const readContract = createCampusRentalContract(readProvider);
       let writeContract = null;
 
       if (account) {
-        const signer = await provider.getSigner();
-        writeContract = createCampusRentalContract(signer);
+        try {
+          const signer = await provider.getSigner();
+          writeContract = createCampusRentalContract(signer);
+        } catch {
+          writeContract = null;
+        }
       }
 
       if (!cancelled) {

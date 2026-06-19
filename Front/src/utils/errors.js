@@ -1,6 +1,8 @@
 const ERROR_MESSAGES = [
   ["User denied transaction signature", "用户取消了钱包确认"],
   ["user rejected", "用户取消了钱包确认"],
+  ["Already processing eth_requestAccounts", "MetaMask 已有待处理的账户请求，请先打开 MetaMask 完成或取消"],
+  ["Request of type 'wallet_requestPermissions' already pending", "MetaMask 已有待处理的账户请求，请先打开 MetaMask 完成或取消"],
   ["Incorrect payment amount", "支付金额不正确，请检查租赁天数、租金和押金"],
   ["Only item owner can operate", "只有物品发布者可以执行该操作"],
   ["Only renter can operate", "只有当前租赁者可以执行该操作"],

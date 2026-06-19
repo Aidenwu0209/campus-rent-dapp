@@ -76,7 +76,17 @@ Available Accounts
 Private Keys
 ```
 
+本仓库的 `npm run ganache` 已使用固定账户模式启动 Ganache：
+
+```bash
+--wallet.deterministic
+```
+
+这表示每次用本仓库命令启动 Ganache，都会生成同一批本地测试账户。第一次把账户 A、账户 B 导入 MetaMask 后，只要不重置 MetaMask、不卸载浏览器、不手动删除导入账户，后续演示一般不需要重新导入账户。
+
 Ganache 会显示 10 个测试账户和对应私钥。这些私钥只属于当前这台电脑上的临时本地测试链，只能用于课程演示，不要用于真实资产钱包。
+
+需要注意：固定账户只保证“账户地址和测试私钥稳定”。如果关闭并重新启动 Ganache，本地链状态仍会重置；已经发布的物品、租赁记录和旧合约状态不会自动保留，需要重新部署合约并重新演示发布流程。
 
 ## 六、添加 MetaMask 本地网络
 
@@ -112,6 +122,8 @@ Chain ID：1337
 
 注意：
 
+- 因为 Ganache 已经固定账户启动，账户 A、账户 B 通常只需要第一次导入 MetaMask。
+- 后续重新打开项目时，如果 MetaMask 里还保留这两个导入账户，直接切换到 `Ganache Local 1337` 网络即可看到测试余额。
 - 不要导入项目作者的真实账户。
 - 不要把自己的真实钱包私钥粘贴到项目或终端里。
 - 不要把 Ganache 打印的测试私钥提交到 GitHub。
@@ -133,7 +145,7 @@ Front/src/contracts/CampusRental.json
 Front/src/contracts/campusRentalAddress.json
 ```
 
-如果关闭并重新启动 Ganache，本地链会重置，合约地址也可能变化。此时需要重新执行：
+如果关闭并重新启动 Ganache，本地链会重置，合约地址也可能变化。账户 A、账户 B 不需要重新导入，但需要重新执行：
 
 ```bash
 npm run migrate
