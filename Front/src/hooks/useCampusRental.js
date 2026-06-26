@@ -11,7 +11,9 @@ export function useCampusRental(account) {
     readContract: null,
     writeContract: null,
     contractAddress: campusRentalAddress,
-    hasProvider: hasEthereumProvider()
+    hasProvider: hasEthereumProvider(),
+    writeMode: "",
+    writeError: ""
   });
 
   useEffect(() => {
@@ -20,10 +22,12 @@ export function useCampusRental(account) {
     async function createContracts() {
       if (!hasEthereumProvider()) {
         setState({
-          readContract: null,
+          readContract: createCampusRentalContract(readProvider),
           writeContract: null,
           contractAddress: campusRentalAddress,
-          hasProvider: false
+          hasProvider: false,
+          writeMode: "",
+          writeError: "请先安装 MetaMask 选择一个 Ganache 测试账户"
         });
         return;
       }
@@ -31,13 +35,23 @@ export function useCampusRental(account) {
       const provider = getBrowserProvider();
       const readContract = createCampusRentalContract(readProvider);
       let writeContract = null;
+      let writeMode = "";
+      let writeError = "";
 
       if (account) {
         try {
-          const signer = await provider.getSigner();
-          writeContract = createCampusRentalContract(signer);
+          const localSigner = await readProvider.getSigner(account);
+          writeContract = createCampusRentalContract(localSigner);
+          writeMode = "ganache-local";
         } catch {
-          writeContract = null;
+          try {
+            const signer = await provider.getSigner();
+            writeContract = createCampusRentalContract(signer);
+            writeMode = "metamask";
+          } catch {
+            writeContract = null;
+            writeError = "当前账户不是 Ganache 本地解锁账户，请切换到 npm run ganache 输出的测试账户";
+          }
         }
       }
 
@@ -46,7 +60,9 @@ export function useCampusRental(account) {
           readContract,
           writeContract,
           contractAddress: campusRentalAddress,
-          hasProvider: true
+          hasProvider: true,
+          writeMode,
+          writeError
         });
       }
     }

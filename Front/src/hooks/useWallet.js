@@ -3,7 +3,8 @@ import {
   getWalletSnapshot,
   hasEthereumProvider,
   requestAccountSwitch,
-  requestWallet
+  requestWallet,
+  switchToGanacheNetwork
 } from "../services/walletService.js";
 import { toUserError } from "../utils/errors.js";
 
@@ -50,6 +51,17 @@ export function useWallet() {
     }
   }, []);
 
+  const switchNetwork = useCallback(async () => {
+    setWallet((current) => ({ ...current, loading: true, error: "" }));
+
+    try {
+      const snapshot = await switchToGanacheNetwork();
+      setWallet((current) => ({ ...current, ...snapshot, loading: false, error: "" }));
+    } catch (error) {
+      setWallet((current) => ({ ...current, loading: false, error: toUserError(error) }));
+    }
+  }, []);
+
   useEffect(() => {
     refreshWallet();
 
@@ -79,6 +91,7 @@ export function useWallet() {
     hasProvider: hasEthereumProvider(),
     connectWallet,
     switchAccount,
+    switchNetwork,
     refreshWallet
   };
 }

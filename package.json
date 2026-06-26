@@ -4,10 +4,13 @@
   "private": true,
   "description": "基于区块链的校园共享物品租赁平台 DApp",
   "scripts": {
+    "setup": "npm install && npm --prefix Front install",
+    "classroom": "node scripts/classroom-demo.js",
     "compile": "truffle compile",
     "migrate": "truffle migrate --network development --reset",
     "test": "truffle test",
-    "ganache": "ganache --wallet.deterministic --wallet.totalAccounts 10 --chain.chainId 1337 --chain.networkId 1337 --server.host 127.0.0.1 --server.port 7545"
+    "ganache": "ganache --wallet.deterministic --wallet.totalAccounts 10 --chain.chainId 1337 --chain.networkId 1337 --server.host 127.0.0.1 --server.port 7545",
+    "ganache:lan": "ganache --wallet.deterministic --wallet.totalAccounts 10 --chain.chainId 1337 --chain.networkId 1337 --server.host 0.0.0.0 --server.port 7545"
   },
   "devDependencies": {
     "ganache": "^7.9.2",

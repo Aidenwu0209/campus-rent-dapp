@@ -15,7 +15,10 @@ const ERROR_MESSAGES = [
   ["missing revert data", "合约拒绝了本次操作，请检查账户权限、物品状态或支付金额"],
   ["call exception", "合约调用失败，请确认网络、合约地址和链上状态"],
   ["network changed", "钱包网络已切换，请刷新数据后重试"],
-  ["could not coalesce error", "合约校验未通过，请检查状态、权限或支付金额"]
+  ["could not coalesce error", "合约校验未通过，请检查状态、权限或支付金额"],
+  ["signal is aborted", "MetaMask 中断了交易请求；请使用 Ganache 本地直连交易模式或重置 MetaMask 账户后重试"],
+  ["nonce", "交易序号异常，请重置 MetaMask 账户或刷新本地 Ganache 后重试"],
+  ["cannot estimate gas", "钱包无法估算 Gas，请确认合约地址、账户权限和链上状态"]
 ];
 
 export function toUserError(error) {

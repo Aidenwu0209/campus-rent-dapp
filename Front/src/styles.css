@@ -317,6 +317,12 @@ button:disabled {
   border: 1px solid #fecaca;
 }
 
+.topbar-alert.success {
+  color: #166534;
+  background: rgba(220, 252, 231, 0.86);
+  border: 1px solid #bbf7d0;
+}
+
 .main-layout {
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
@@ -621,10 +627,20 @@ button:disabled {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin: 0;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.34);
+  border: 1px solid rgba(181, 213, 255, 0.62);
+  border-radius: var(--radius-md);
+}
+
+.meta-grid > div {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
 }
 
 .meta-grid dt {
-  margin-bottom: 4px;
+  margin-bottom: 0;
   font-size: 12px;
 }
 

@@ -27,13 +27,15 @@ export default function App() {
   const campusRental = useCampusRental(wallet.account);
   const networkReady = isSupportedLocalChain(wallet.chainId);
   const hasTransactionBalance = wallet.balance !== "" && Number(wallet.balance) > 0;
-  const transactionReady = wallet.isConnected && networkReady && hasTransactionBalance;
+  const transactionReady = wallet.isConnected && networkReady && hasTransactionBalance && Boolean(campusRental.writeContract);
   const transactionDisabledReason = !wallet.isConnected
     ? "请先连接钱包"
     : !networkReady
       ? "请切换到 Ganache Chain ID 1337 后再交易"
       : !hasTransactionBalance
         ? "当前账户余额为 0，请切换或导入 Ganache 测试账户后再交易"
+        : !campusRental.writeContract
+          ? campusRental.writeError || "当前账户无法发起交易，请切换到 Ganache 测试账户"
         : "";
   const readContract = networkReady ? campusRental.readContract : null;
   const writeContract = transactionReady ? campusRental.writeContract : null;
@@ -58,6 +60,7 @@ export default function App() {
           wallet={wallet}
           contractAddress={campusRental.contractAddress}
           hasProvider={campusRental.hasProvider}
+          writeMode={campusRental.writeMode}
         />
       )}
       nav={<NavTabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />}

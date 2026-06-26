@@ -5,6 +5,14 @@ import { formatEth, formatTimestamp, parseEth } from "../utils/format.js";
 
 export const campusRentalAddress = addressPayload.address;
 const campusRentalAbi = CampusRentalArtifact.abi;
+const WRITE_GAS_LIMITS = {
+  createItem: 600000n,
+  rentItem: 700000n,
+  requestReturn: 300000n,
+  confirmReturn: 500000n,
+  unlistItem: 300000n,
+  relistItem: 300000n
+};
 
 export function createCampusRentalContract(runner) {
   if (!runner || !campusRentalAddress) {
@@ -102,7 +110,8 @@ export async function createItem(contract, form) {
     form.description.trim(),
     parseEth(form.rentPerDayEth),
     parseEth(form.depositEth),
-    Number(form.maxRentalDays)
+    Number(form.maxRentalDays),
+    { gasLimit: WRITE_GAS_LIMITS.createItem }
   );
   const receipt = await tx.wait();
 
@@ -116,35 +125,38 @@ export async function rentItem(contract, item, rentDays) {
   }
 
   const totalPayment = item.rentPerDay * BigInt(normalizedDays) + item.deposit;
-  const tx = await contract.rentItem(item.id, normalizedDays, { value: totalPayment });
+  const tx = await contract.rentItem(item.id, normalizedDays, {
+    value: totalPayment,
+    gasLimit: WRITE_GAS_LIMITS.rentItem
+  });
   const receipt = await tx.wait();
 
   return { tx, receipt };
 }
 
 export async function requestReturn(contract, rentalId) {
-  const tx = await contract.requestReturn(rentalId);
+  const tx = await contract.requestReturn(rentalId, { gasLimit: WRITE_GAS_LIMITS.requestReturn });
   const receipt = await tx.wait();
 
   return { tx, receipt };
 }
 
 export async function confirmReturn(contract, rentalId) {
-  const tx = await contract.confirmReturn(rentalId);
+  const tx = await contract.confirmReturn(rentalId, { gasLimit: WRITE_GAS_LIMITS.confirmReturn });
   const receipt = await tx.wait();
 
   return { tx, receipt };
 }
 
 export async function unlistItem(contract, itemId) {
-  const tx = await contract.unlistItem(itemId);
+  const tx = await contract.unlistItem(itemId, { gasLimit: WRITE_GAS_LIMITS.unlistItem });
   const receipt = await tx.wait();
 
   return { tx, receipt };
 }
 
 export async function relistItem(contract, itemId) {
-  const tx = await contract.relistItem(itemId);
+  const tx = await contract.relistItem(itemId, { gasLimit: WRITE_GAS_LIMITS.relistItem });
   const receipt = await tx.wait();
 
   return { tx, receipt };

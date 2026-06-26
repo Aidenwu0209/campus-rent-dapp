@@ -27682,7 +27682,7 @@
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2026-06-19T12:53:04.702Z",
+  "updatedAt": "2026-06-25T05:55:29.584Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "本合约用于课程选题一演示，资金由合约在租赁期间托管，确认归还后分别退回押金并结算租金。",

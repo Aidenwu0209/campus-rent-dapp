@@ -19,7 +19,7 @@ function compactBalance(balance) {
   });
 }
 
-export default function WalletPanel({ wallet, contractAddress, hasProvider }) {
+export default function WalletPanel({ wallet, contractAddress, hasProvider, writeMode }) {
   const wrongNetwork = wallet.chainId && !isSupportedLocalChain(wallet.chainId);
   const connectedLabel = wallet.isConnected ? "MetaMask 已连接" : hasProvider ? "未连接钱包" : "未安装 MetaMask";
   const balanceLabel = compactBalance(wallet.balance);
@@ -67,6 +67,16 @@ export default function WalletPanel({ wallet, contractAddress, hasProvider }) {
               切换账号
             </button>
           )}
+          {wrongNetwork && (
+            <button
+              type="button"
+              className="mini-refresh-button secondary"
+              onClick={wallet.switchNetwork}
+              disabled={wallet.loading || !hasProvider}
+            >
+              切换网络
+            </button>
+          )}
           <button
             type="button"
             className="mini-refresh-button"
@@ -90,6 +100,16 @@ export default function WalletPanel({ wallet, contractAddress, hasProvider }) {
       {zeroBalance && (
         <div className="topbar-alert warning">
           余额为 0：请选择 Ganache 测试账户；若重启过 Ganache，请重新导入终端测试私钥。
+        </div>
+      )}
+      {wallet.isConnected && !wrongNetwork && writeMode === "ganache-local" && (
+        <div className="topbar-alert success">
+          本地 Ganache 直连交易已启用：交易会直接写入 {GANACHE_RPC_URL}，不再依赖 MetaMask 弹窗确认。
+        </div>
+      )}
+      {wallet.isConnected && !wrongNetwork && writeMode === "metamask" && (
+        <div className="topbar-alert warning">
+          当前账户不是 Ganache 解锁账户，交易仍需 MetaMask 确认；如交易失败，请切换到 Ganache 输出的测试账户。
         </div>
       )}
       {!hasProvider && <div className="topbar-alert error">请先安装 MetaMask 钱包</div>}

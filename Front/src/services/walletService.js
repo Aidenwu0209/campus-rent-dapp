@@ -4,6 +4,10 @@ import { formatEth } from "../utils/format.js";
 
 const ganacheProvider = new ethers.JsonRpcProvider(GANACHE_RPC_URL);
 
+function toHexChainId(chainId) {
+  return `0x${Number(chainId).toString(16)}`;
+}
+
 export function hasEthereumProvider() {
   return typeof window !== "undefined" && Boolean(window.ethereum);
 }
@@ -44,6 +48,37 @@ export async function requestAccountSwitch() {
 
   const accounts = await provider.send("eth_requestAccounts", []);
   return getWalletSnapshot(accounts[0]);
+}
+
+export async function switchToGanacheNetwork() {
+  const provider = getBrowserProvider();
+
+  if (!provider) {
+    throw new Error("请先安装 MetaMask 钱包");
+  }
+
+  const chainId = toHexChainId(GANACHE_CHAIN_ID);
+
+  try {
+    await provider.send("wallet_switchEthereumChain", [{ chainId }]);
+  } catch (error) {
+    if (error?.code !== 4902) {
+      throw error;
+    }
+
+    await provider.send("wallet_addEthereumChain", [{
+      chainId,
+      chainName: `Ganache Local ${GANACHE_CHAIN_ID}`,
+      rpcUrls: [GANACHE_RPC_URL],
+      nativeCurrency: {
+        name: "Ether",
+        symbol: "ETH",
+        decimals: 18
+      }
+    }]);
+  }
+
+  return getWalletSnapshot();
 }
 
 export async function getWalletSnapshot(preferredAccount) {
